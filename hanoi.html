@@ -1,0 +1,860 @@
+<!--
+// $Id: hanoi.html,v 1.0 13/10/2006 Antonio Rodrigo S. Silva                 $
+//  ------------------------------------------------------------------------ //
+//                          TORRE DE HANÓI 1.0                               //
+//                 Copyright (c) 2006 HYPERMEDIA SISTEMAS                    //
+//                         hypermedia@gmail.com                              //
+//  ------------------------------------------------------------------------ //
+//  This program is free software; you can redistribute it and/or modify     //
+//  it under the terms of the GNU General Public License as published by     //
+//  the Free Software Foundation; either version 2 of the License, or        //
+//  (at your option) any later version.                                      //
+//                                                                           //
+//  You may not change or alter any portion of this comment or credits       //
+//  of supporting developers from this source code or any supporting         //
+//  source code which is considered copyrighted (c) material of the          //
+//  original comment or credit authors.                                      //
+//                                                                           //
+//  This program is distributed in the hope that it will be useful,          //
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of           //
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            //
+//  GNU General Public License for more details.                             //
+//                                                                           //
+//  You should have received a copy of the GNU General Public License        //
+//  along with this program; if not, write to the Free Software              //
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA //
+//  ------------------------------------------------------------------------ //
+//-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>TORRE DE HAN&Oacute;I 1.0 - HYPERMEDIA SISTEMAS</title>
+<style>
+.torreVertical{
+    position:absolute;
+	border:1px solid #000000;	
+	background-color:#000000;
+}
+.torreHorizontal{
+    position:absolute;
+	border:1px solid black;
+	font-size:1px;
+	background-color:#000000;
+}
+.nomeTorre{
+    position:absolute;	
+	background-color:#FFFFFF;
+	left:70px;
+	top:190px;
+}
+.controle{
+    position:absolute;
+}
+td{
+    font-family:Verdana, Arial, Helvetica;
+	font-size:11px;
+}
+.botao{
+    border:1px solid #000000;
+    background-color:#FFFFFF;
+	font-family:Verdana, Arial, Helvetica;
+	font-size:11px;
+	font-weight:bold;
+	cursor:pointer;
+}
+.botaoSobre{
+    border:1px solid #000000;
+    background-color:#FFFFCC;
+	font-family:Verdana, Arial, Helvetica;
+	font-size:11px;
+	font-weight:bold;
+	cursor:pointer;
+}
+.disco{
+    position:absolute;
+	border:1px solid black;	
+}
+.style1 {
+	color: #0000FF;
+	font-weight: bold;
+}
+body {
+	background-image: url(galeria/fundoPrg.jpg);
+}
+</style>
+
+</head>
+<script language="javascript" type="text/javascript">
+
+var botaoClicado = null;
+var contaClick = 0;
+var torreDestino = "";
+var torreInicial = "";
+var zindex = 0;
+var disk;
+var delay = 5;
+var limiteTopo = 20;
+var contaMovimentosDados = 0;
+var fimJogo = false;
+
+var discosTorre1   = new Array(null,null,null,null,null,null,null,null);
+var discosTorre2   = new Array(null,null,null,null,null,null,null,null);
+var discosTorre3   = new Array(null,null,null,null,null,null,null,null);
+var discosTorreAux = new Array(null,null,null,null,null,null,null,null);
+
+var topoTorre1, topoTorre2, topoTorre3;
+
+var horas = 0;
+var minutos = 0;
+var segundos = 0;
+var controleTempo;
+var delayTempo = 1000;
+
+function criarDiscos(quantidadeDiscos){
+     var i;
+     var torreHorizontalTopo   = parseInt(document.getElementById('torreHorizontal1').style.top);
+	 var torre1Esquerda        = parseInt(document.getElementById('torre1').style.left);
+	 var metadeTorreHorizontal = parseInt(document.getElementById("torreHorizontal1").style.width)/2;
+	 var topoDisco             = parseInt(document.getElementById('torre1').style.top) + parseInt(document.getElementById("torreHorizontal1").style.top);
+	 var alturaDisco           = parseInt(document.getElementById("disco2").style.height);
+	 
+	 var larguraDisco;
+	 
+	 for (i = 0; i<= discosTorre1.length -1; i++){
+	    discosTorre1[i] = null;
+		discosTorre2[i] = null;
+		discosTorre3[i] = null;
+		discosTorreAux[i] = null;
+	 }
+ 
+	 for (i = discosTorre1.length; i >= 1; i--){
+        disk = document.getElementById("disco" + i);
+		disk.style.zIndex = ++zindex;
+		larguraDisco = disk.style.width;
+        if (i <= quantidadeDiscos){
+            disk.style.left = torre1Esquerda + metadeTorreHorizontal - parseInt(larguraDisco)/2 + "px";
+            disk.style.top  = topoDisco - alturaDisco - 1 + "px";
+            topoDisco = parseInt(disk.style.top);
+            discosTorre1[i-1] = disk.id;
+        }            
+        else {
+            disk.style.left="-250px";
+            disk.style.top="-250px";
+            discosTorre1[i-1] = null;
+        }
+     }	 
+	 for (i = 0; i <= discosTorre1.length - 1; i++){
+	     discosTorreAux[i] = discosTorre1[i];
+	 }
+}
+
+function iniciar(){
+    var indice;
+	if (contaMovimentosDados >= 1 && fimJogo == false){
+	    paraTempo();
+	    if (confirm("Há um jogo em andamento. Deseja encerrá-lo?")){
+		    if (document.getElementById("botaoIniciar").value == "Iniciar"){
+	            document.getElementById("botaoIniciar").value = "Reiniciar";
+	        }
+            habilitarBotoes();	
+            indice = document.getElementById("totalDiscos").options.selectedIndex;
+            criarDiscos(parseInt(document.getElementById("totalDiscos").options[indice].text));
+	        iniciarVariaveis();
+	        document.getElementById("quantidadeMinima").innerHTML = document.getElementById("totalDiscos").options[indice].value;
+	        limpaTempo();
+	        paraTempo();
+	        tempo();
+		}
+		else{
+		    tempo();
+		}	
+	}
+	else{
+	    if (document.getElementById("botaoIniciar").value == "Iniciar"){
+	        document.getElementById("botaoIniciar").value = "Reiniciar";
+	    }
+        habilitarBotoes();		
+        indice = document.getElementById("totalDiscos").options.selectedIndex;
+        criarDiscos(parseInt(document.getElementById("totalDiscos").options[indice].text));
+	    iniciarVariaveis();
+	    document.getElementById("quantidadeMinima").innerHTML = document.getElementById("totalDiscos").options[indice].value;
+	    limpaTempo();
+	    paraTempo();
+	    tempo();		
+	}
+}
+
+function carregaDocumento(){
+    desabilitarBotoes();
+	document.getElementById("tempo").innerHTML = "00 : 00 : 00";
+	document.getElementById("botaoInstrucoes").disabled = false;
+}
+
+function analiseClick(obj){    
+    if (contaClick == 0){
+	    botaoClicado = obj.id;
+	    if (botaoClicado == "botaoTorre1"){
+		    if (discosTorre1[0] != null){
+		        torreInicial = "torre1";
+				document.getElementById("textoOrigem").innerHTML = "TORRE 1";
+				document.getElementById("botaoDesfazer").disabled = false;
+		        contaClick = 1;
+			}
+			else{
+			    paraTempo();
+			    alert('Não há discos a serem movidos na torre 1!');
+				tempo();
+			}
+		}
+		else if (botaoClicado == "botaoTorre2"){
+		    if (discosTorre2[0] != null){
+		        torreInicial = "torre2";
+				document.getElementById("textoOrigem").innerHTML = "TORRE 2";
+				document.getElementById("botaoDesfazer").disabled = false;
+		        contaClick = 1;
+			}
+			else{
+			    paraTempo();
+			    alert('Não há discos a serem movidos na torre 2!');
+				tempo();
+			}
+		}
+		else if (botaoClicado == "botaoTorre3"){
+		    if (discosTorre3[0] != null){
+		        torreInicial = "torre3";
+				document.getElementById("textoOrigem").innerHTML = "TORRE 3";
+				document.getElementById("botaoDesfazer").disabled = false;
+		        contaClick = 1;
+			}
+			else{
+			    paraTempo();
+			    alert('Não há discos a serem movidos na torre 3!');
+				tempo();
+			}
+		}
+	}
+	else if (contaClick == 1){
+	    botaoClicado = obj.id;		
+	    if (botaoClicado == "botaoTorre1"){
+		    torreDestino = "torre1";
+			document.getElementById("botaoTorre1").className = "botao";
+			document.getElementById("textoDestino").innerHTML = "TORRE 1";
+			document.getElementById("botaoDesfazer").disabled = true;
+		}
+		else if (botaoClicado == "botaoTorre2"){
+		    torreDestino = "torre2";
+			document.getElementById("botaoTorre2").className = "botao";
+			document.getElementById("textoDestino").innerHTML = "TORRE 2";
+			document.getElementById("botaoDesfazer").disabled = true;
+		}
+		else if (botaoClicado == "botaoTorre3"){
+		    torreDestino = "torre3";
+			document.getElementById("botaoTorre3").className = "botao";
+			document.getElementById("textoDestino").innerHTML = "TORRE 3";
+			document.getElementById("botaoDesfazer").disabled = true;
+		}
+		
+		if (torreInicial == torreDestino){
+		    paraTempo();
+		    alert("A torre de destino não pode ser igual à torre de origem!")
+			tempo();
+			limpaTextos();
+			torreInicial = "";
+			torreDestino = "";
+			contaClick = 0;
+		}
+		else{		    
+		    desabilitarBotoes();
+			moverDisco();
+		    contaClick = 0;
+			contaMovimentosDados++;
+			document.getElementById("totalMovimentos").innerHTML = contaMovimentosDados;
+		}
+	}
+}
+
+function desfazer(){
+    limpaTextos();
+	torreInicial = "";
+	torreDestino = "";
+	contaClick = 0;
+	document.getElementById("botaoDesfazer").disabled = true;
+    document.getElementById("botaoDesfazer").className='botao';
+}
+
+function moverDisco(){
+    var topoDisco, esqDisco;	
+	var i;
+	var timerID;
+	var metadeTorreHorizontal = parseInt(document.getElementById("torreHorizontal1").style.width)/2;
+	
+	var torre1Esquerda        = parseInt(document.getElementById('torre1').style.left);
+	var torre2Esquerda        = parseInt(document.getElementById('torre2').style.left);
+	var torre3Esquerda        = parseInt(document.getElementById('torre3').style.left);
+	var larguraDisco;
+	var limiteEsq1, limiteEsq2, limiteEsq3;
+	var limiteBaixo;
+	var alturaDisco           = parseInt(document.getElementById("disco2").style.height);
+	
+    if (torreInicial == "torre1"){
+		esqDisco     = parseInt(document.getElementById(discosTorre1[0]).style.left);		
+	    larguraDisco = parseInt(document.getElementById(discosTorre1[0]).style.width);		
+		limiteEsq2   = torre2Esquerda + metadeTorreHorizontal - parseInt(larguraDisco)/2;
+		limiteEsq3   = torre3Esquerda + metadeTorreHorizontal - parseInt(larguraDisco)/2;				
+		topoDisco    = parseInt(document.getElementById(discosTorre1[0]).style.top);
+		
+		// torre de destino 2
+		if (torreDestino == "torre2"){
+		    limiteBaixo = topoTorre2;
+			if ((discosTorre2[0] == null) || (larguraDisco < parseInt(document.getElementById(discosTorre2[0]).style.width))){
+		        if (esqDisco < limiteEsq2 && topoDisco > limiteTopo){
+			        document.getElementById(discosTorre1[0]).style.top = topoDisco - 2 + "px";					
+			    }
+			    else if (esqDisco < limiteEsq2 && topoDisco == limiteTopo){
+				    document.getElementById(discosTorre1[0]).style.left = esqDisco + 2 + "px";
+			    }
+			    else if (esqDisco == limiteEsq2 && topoDisco < limiteBaixo){
+			        document.getElementById(discosTorre1[0]).style.top = topoDisco + 2 + "px";
+			    }				
+				
+			    if (esqDisco == limiteEsq2 && topoDisco == limiteBaixo){
+			        clearTimeout(timerID);
+			        troca(discosTorre1, discosTorre2);					
+					
+					if (discosTorre2[0] != null){				    
+					    topoTorre2  = topoDisco - alturaDisco - 1;
+					}
+					else{
+					    topoTorre2  = (parseInt(document.getElementById('torre2').style.top) + 
+						               parseInt(document.getElementById("torreHorizontal2").style.top)) - alturaDisco - 1;					
+					}
+					
+					if (discosTorre1[0] != null){
+					    topoTorre1  = parseInt(document.getElementById(discosTorre1[0]).style.top) - alturaDisco - 1;
+					}
+					else{
+					    topoTorre1 = (parseInt(document.getElementById('torre1').style.top) + 
+						               parseInt(document.getElementById("torreHorizontal1").style.top)) - alturaDisco - 1;
+					}					
+			        habilitarBotoes();
+			        limpaTextos();
+			    }
+			    else{
+			       timerID = setTimeout("moverDisco()",delay);				   
+			    }
+			}
+			else{
+			    paraTempo();
+			    alert('Jogada inválida!\nUm disco maior não pode ficar em cima do disco menor!');
+				tempo();
+				habilitarBotoes();
+				limpaTextos();
+			}
+		}
+		
+		// torre de destino 3
+		if (torreDestino == "torre3"){
+		    limiteBaixo = topoTorre3;			
+			if ((discosTorre3[0] == null) || (larguraDisco < parseInt(document.getElementById(discosTorre3[0]).style.width))){
+		        if (esqDisco < limiteEsq3 && topoDisco > limiteTopo){
+			        document.getElementById(discosTorre1[0]).style.top = topoDisco - 2 + "px";					
+			    }
+			    else if (topoDisco == limiteTopo && esqDisco < limiteEsq3){
+				    document.getElementById(discosTorre1[0]).style.left = esqDisco + 2 + "px";
+			    }
+			    else if (esqDisco == limiteEsq3 && topoDisco < limiteBaixo){
+			        document.getElementById(discosTorre1[0]).style.top = topoDisco + 2 + "px";
+			    }
+				
+			    if (esqDisco == limiteEsq3 && topoDisco == limiteBaixo){
+			        clearTimeout(timerID);
+			        troca(discosTorre1, discosTorre3);					
+					
+					if (discosTorre3[0] != null){				    
+					    topoTorre3  = topoDisco - alturaDisco - 1;
+					}
+					else{
+					    topoTorre3  = (parseInt(document.getElementById('torre3').style.top) + 
+						               parseInt(document.getElementById("torreHorizontal3").style.top)) - alturaDisco - 1;					
+					}
+					
+					if (discosTorre1[0] != null){
+					    topoTorre1  = parseInt(document.getElementById(discosTorre1[0]).style.top) - alturaDisco - 1;
+					}
+					else{
+					    topoTorre1 = (parseInt(document.getElementById('torre1').style.top) + 
+						               parseInt(document.getElementById("torreHorizontal1").style.top)) - alturaDisco - 1;
+					}					
+			        habilitarBotoes();
+			        limpaTextos();
+					verificarFim();
+			    }
+			    else{
+			       timerID = setTimeout("moverDisco()",delay);				   
+			    }
+			}
+			else{
+			    paraTempo();
+			    alert('Jogada inválida!\nUm disco maior não pode ficar em cima do disco menor!');
+				tempo();
+				habilitarBotoes();
+				limpaTextos();
+			}
+		}		
+	} // fim torre origem 1
+	
+	if (torreInicial == "torre2"){
+		esqDisco     = parseInt(document.getElementById(discosTorre2[0]).style.left);		
+	    larguraDisco = parseInt(document.getElementById(discosTorre2[0]).style.width);		
+		limiteEsq1   = torre1Esquerda + metadeTorreHorizontal - parseInt(larguraDisco)/2;
+		limiteEsq3   = torre3Esquerda + metadeTorreHorizontal - parseInt(larguraDisco)/2;				
+		topoDisco    = parseInt(document.getElementById(discosTorre2[0]).style.top);
+		
+		// torre de destino 1
+		if (torreDestino == "torre1"){
+		    limiteBaixo = topoTorre1;			
+			if ((discosTorre1[0] == null) || (larguraDisco < parseInt(document.getElementById(discosTorre1[0]).style.width))){
+		        if (esqDisco > limiteEsq1 && topoDisco > limiteTopo){
+			        document.getElementById(discosTorre2[0]).style.top = topoDisco - 2 + "px";					
+			    }
+			    else if (topoDisco == limiteTopo && esqDisco > limiteEsq1){
+				    document.getElementById(discosTorre2[0]).style.left = esqDisco - 2 + "px";
+			    }
+			    else if (esqDisco == limiteEsq1 && topoDisco < limiteBaixo){
+			        document.getElementById(discosTorre2[0]).style.top = topoDisco + 2 + "px";					
+			    }				
+			    if (esqDisco == limiteEsq1 && topoDisco == limiteBaixo){
+			       clearTimeout(timerID);
+			       troca(discosTorre2, discosTorre1);					
+					
+					if (discosTorre1[0] != null){				    
+					    topoTorre1  = topoDisco - alturaDisco - 1;
+					}
+					else{
+					    topoTorre1  = (parseInt(document.getElementById('torre1').style.top) + 
+						               parseInt(document.getElementById("torreHorizontal1").style.top)) - alturaDisco - 1;					
+					}
+					
+					if (discosTorre2[0] != null){
+					    topoTorre2  = parseInt(document.getElementById(discosTorre2[0]).style.top) - alturaDisco - 1;
+					}
+					else{
+					    topoTorre2 = (parseInt(document.getElementById('torre2').style.top) + 
+						               parseInt(document.getElementById("torreHorizontal2").style.top)) - alturaDisco - 1;
+					}
+			        habilitarBotoes();
+			        limpaTextos();
+			    }
+			    else{
+			        timerID = setTimeout("moverDisco()",delay);
+			    }				
+			}
+			else{
+			    paraTempo();
+			    alert('Jogada inválida!\nUm disco maior não pode ficar em cima do disco menor!');
+				tempo();
+				habilitarBotoes();
+				limpaTextos();
+			}
+		}
+		
+		// torre de destino 3
+		if (torreDestino == "torre3"){
+		    limiteBaixo = topoTorre3;
+			if ((discosTorre3[0] == null) || (larguraDisco < parseInt(document.getElementById(discosTorre3[0]).style.width))){
+		        if (esqDisco < limiteEsq3 && topoDisco > limiteTopo){
+			        document.getElementById(discosTorre2[0]).style.top = topoDisco - 2 + "px";					
+			    }
+			    else if (topoDisco == limiteTopo && esqDisco < limiteEsq3){
+				    document.getElementById(discosTorre2[0]).style.left = esqDisco + 2 + "px";
+			    }
+			    else if (esqDisco == limiteEsq3 && topoDisco < limiteBaixo){
+			        document.getElementById(discosTorre2[0]).style.top = topoDisco + 2 + "px";
+			    }
+				
+			    if (esqDisco == limiteEsq3&& topoDisco == limiteBaixo){
+			        clearTimeout(timerID);
+			        troca(discosTorre2, discosTorre3);				
+					
+					if (discosTorre3[0] != null){				    
+					    topoTorre3  = topoDisco - alturaDisco - 1;
+					}
+					else{
+					    topoTorre3  = (parseInt(document.getElementById('torre3').style.top) + 
+						               parseInt(document.getElementById("torreHorizontal3").style.top)) - alturaDisco - 1;					
+					}
+					
+					if (discosTorre2[0] != null){
+					    topoTorre2  = parseInt(document.getElementById(discosTorre2[0]).style.top) - alturaDisco - 1;
+					}
+					else{
+					    topoTorre2 = (parseInt(document.getElementById('torre2').style.top) + 
+						               parseInt(document.getElementById("torreHorizontal2").style.top)) - alturaDisco - 1;
+					}					
+			        habilitarBotoes();
+			        limpaTextos();
+					verificarFim();
+			    }
+			    else{
+			       timerID = setTimeout("moverDisco()",delay);			   
+			    }
+			}
+			else{
+			    paraTempo();
+			    alert('Jogada inválida!\nUm disco maior não pode ficar em cima do disco menor!');
+				tempo();
+				habilitarBotoes();
+				limpaTextos();
+			}
+		}		
+	} // fim torre origem 2
+	
+	if (torreInicial == "torre3"){
+		esqDisco     = parseInt(document.getElementById(discosTorre3[0]).style.left);
+	    larguraDisco = parseInt(document.getElementById(discosTorre3[0]).style.width);		
+		limiteEsq1   = torre1Esquerda + metadeTorreHorizontal - parseInt(larguraDisco)/2;
+		limiteEsq2   = torre2Esquerda + metadeTorreHorizontal - parseInt(larguraDisco)/2;				
+		topoDisco    = parseInt(document.getElementById(discosTorre3[0]).style.top);
+		
+		// torre de destino 1
+		if (torreDestino == "torre1"){
+		    limiteBaixo = topoTorre1;			
+			if ((discosTorre1[0] == null) || (larguraDisco < parseInt(document.getElementById(discosTorre1[0]).style.width))){
+		        if (esqDisco > limiteEsq1 && topoDisco > limiteTopo){
+			        document.getElementById(discosTorre3[0]).style.top = topoDisco - 2 + "px";					
+			    }
+			    else if (topoDisco == limiteTopo && esqDisco > limiteEsq1){
+				    document.getElementById(discosTorre3[0]).style.left = esqDisco - 2 + "px";
+			    }
+			    else if (esqDisco == limiteEsq1 && topoDisco < limiteBaixo){
+			        document.getElementById(discosTorre3[0]).style.top = topoDisco + 2 + "px";					
+			    }				
+			    if (esqDisco == limiteEsq1 && topoDisco == limiteBaixo){
+			       clearTimeout(timerID);
+			       troca(discosTorre3, discosTorre1);					
+					
+					if (discosTorre1[0] != null){				    
+					    topoTorre1  = topoDisco - alturaDisco - 1;
+					}
+					else{
+					    topoTorre1  = (parseInt(document.getElementById('torre1').style.top) + 
+						               parseInt(document.getElementById("torreHorizontal1").style.top)) - alturaDisco - 1;					
+					}
+					
+					if (discosTorre3[0] != null){
+					    topoTorre3  = parseInt(document.getElementById(discosTorre3[0]).style.top) - alturaDisco - 1;
+					}
+					else{
+					    topoTorre3 = (parseInt(document.getElementById('torre3').style.top) + 
+						               parseInt(document.getElementById("torreHorizontal3").style.top)) - alturaDisco - 1;
+					}
+			        habilitarBotoes();
+			        limpaTextos();
+			    }
+			    else{
+			        timerID = setTimeout("moverDisco()",delay);
+			    }
+			}
+			else{
+			    paraTempo();
+			    alert('Jogada inválida!\nUm disco maior não pode ficar em cima do disco menor!');
+				tempo();
+				habilitarBotoes();
+				limpaTextos();
+			}
+		}
+		
+		// torre de destino 2
+		if (torreDestino == "torre2"){
+		    limiteBaixo = topoTorre2;
+			if ((discosTorre2[0] == null) || (larguraDisco < parseInt(document.getElementById(discosTorre2[0]).style.width))){
+		        if (esqDisco > limiteEsq2 && topoDisco > limiteTopo){
+			        document.getElementById(discosTorre3[0]).style.top = topoDisco - 2 + "px";
+			    }
+			    else if (topoDisco == limiteTopo && esqDisco > limiteEsq2){
+				    document.getElementById(discosTorre3[0]).style.left = esqDisco - 2 + "px";
+			    }
+			    else if (esqDisco == limiteEsq2 && topoDisco < limiteBaixo){
+			        document.getElementById(discosTorre3[0]).style.top = topoDisco + 2 + "px";
+			    }
+				
+			    if (esqDisco == limiteEsq2 && topoDisco == limiteBaixo){
+			        clearTimeout(timerID);
+			        troca(discosTorre3, discosTorre2);				
+					
+					if (discosTorre2[0] != null){				    
+					    topoTorre2  = topoDisco - alturaDisco - 1;
+					}
+					else{
+					    topoTorre2  = (parseInt(document.getElementById('torre2').style.top) + 
+						               parseInt(document.getElementById("torreHorizontal2").style.top)) - alturaDisco - 1;					
+					}
+					
+					if (discosTorre3[0] != null){
+					    topoTorre3  = parseInt(document.getElementById(discosTorre3[0]).style.top) - alturaDisco - 1;
+					}
+					else{
+					    topoTorre3 = (parseInt(document.getElementById('torre3').style.top) + 
+						               parseInt(document.getElementById("torreHorizontal3").style.top)) - alturaDisco - 1;
+					}
+					
+			        habilitarBotoes();
+			        limpaTextos();
+			    }
+			    else{
+			       timerID = setTimeout("moverDisco()",delay);
+			    }
+			}
+			else{
+			    paraTempo();
+			    alert('Jogada inválida!\nUm disco maior não pode ficar em cima do disco menor!');
+				tempo();
+				habilitarBotoes();
+				limpaTextos();
+			}
+		}		
+	} // fim torre origem 3	
+}
+
+function desabilitarBotoes(){
+    document.getElementById("botaoTorre1").disabled = true;
+	document.getElementById("botaoTorre2").disabled = true;
+	document.getElementById("botaoTorre3").disabled = true;
+	document.getElementById("botaoInstrucoes").disabled = true;
+}
+function habilitarBotoes(){
+    document.getElementById("botaoTorre1").disabled = false;
+	document.getElementById("botaoTorre2").disabled = false;
+	document.getElementById("botaoTorre3").disabled = false;
+	document.getElementById("botaoInstrucoes").disabled = false;
+}
+function limpaTextos(){
+    document.getElementById("textoOrigem").innerHTML  = "-";
+	document.getElementById("textoDestino").innerHTML = "-";
+}
+
+function troca(arrayOrigem, arrayDest){
+    var i, temp;
+	
+	for (i = 0; i <= arrayOrigem.length - 1; i++){
+	    if (i == 0){
+		    temp = arrayOrigem[0];			
+		}
+		if (i == arrayOrigem.length - 1){
+		    arrayOrigem[i] = null;
+		}
+		else{
+		    arrayOrigem[i] = arrayOrigem[i + 1];
+		}
+	}
+	
+	for (i = arrayDest.length - 1; i >= 0; i--){
+	    if (i > 0){
+		    arrayDest[i] = arrayDest[i - 1];
+		}
+		else{
+		    arrayDest[i] = temp;
+		}
+	}	
+}
+
+function iniciarVariaveis(){    	
+	var i;
+	var alturaDisco = parseInt(document.getElementById("disco2").style.height);
+	topoTorre1  = parseInt(document.getElementById(discosTorre1[0]).style.top) - alturaDisco - 1;
+	topoTorre2 = (parseInt(document.getElementById('torre2').style.top) + 
+	                parseInt(document.getElementById("torreHorizontal2").style.top)) - alturaDisco - 1;
+	topoTorre3 = (parseInt(document.getElementById('torre3').style.top) + 
+	                parseInt(document.getElementById("torreHorizontal3").style.top)) - alturaDisco - 1;
+					
+    botaoClicado = null;
+    contaClick = 0;
+    torreDestino = "";
+    torreInicial = "";
+    zindex = 0;
+    contaMovimentosDados = 0;
+    fimJogo = false;
+	document.getElementById("totalMovimentos").innerHTML = contaMovimentosDados;
+	
+}
+
+function verificarFim(){
+    var i;
+	var correto = 8;
+	var total   = 0;
+	var indice = document.getElementById("totalDiscos").options.selectedIndex;
+	
+	if (contaMovimentosDados >= parseInt(document.getElementById("totalDiscos").options[indice].value)){
+	    for (i = 0; i <= discosTorre3.length -1 ; i++){	    
+	        if (discosTorre3[i] == discosTorreAux[i]){
+		        total++;
+		    }
+	    }
+        if (total == correto){
+		    paraTempo();
+                    fimJogo = true;
+			desabilitarBotoes();
+	        if (contaMovimentosDados == parseInt(document.getElementById("totalDiscos").options[indice].value)){
+			    alert("PARABÉNS!!! Você completou a torre com a mínima quantidade de jogadas!");
+			}
+			else{
+			    alert("MUITO BEM!!! Você completou a torre, mas você pode melhorar, pois você se movimentou mais do que o mínimo permitido!");
+			}
+			document.getElementById("botaoInstrucoes").disabled = false;
+	    }
+	}
+}
+
+function tempo(){
+    var montaTempo;
+    segundos++;
+	if (segundos == 60){
+	    segundos = 0;
+		minutos++;
+	}
+	if (minutos == 60){
+	    minutos = 0;
+		horas++;
+	}
+	
+	if (horas < 10){
+	   montaTempo = "0" +  horas;
+	}
+	else{
+	    montaTempo = horas;
+	}
+	
+	if (minutos < 10){
+	   montaTempo += " : " + "0" +  minutos;
+	}
+	else{
+	    montaTempo += " : " +  minutos;
+	}
+	
+	if (segundos < 10){
+	   montaTempo += " : " + "0" +  segundos;
+	}
+	else{
+	    montaTempo += " : " +  segundos;
+	}
+	
+	document.getElementById("tempo").innerHTML = montaTempo;
+	controleTempo = setTimeout("tempo()",delayTempo);
+}
+
+function paraTempo(){
+    clearTimeout(controleTempo);
+}
+
+function limpaTempo(){
+    horas = 0;
+    minutos = 0;
+    segundos = 0;
+}
+
+function instrucoes(){
+    if ((segundos !=0) || (minutos !=0) || (horas !=0)){
+        paraTempo();
+        alert('O objetivo de TORRES DE HANÓI é mover todos os discos da [Torre 1] para a [Torre 3], clicando nos botões embaixo de cada torre.\nVocê só pode mover um disco de cada vez e você NÃO PODE colocar um disco maior sobre um disco menor.\nBOA SORTE!!!');
+        tempo();
+    }
+    else{
+        alert('O objetivo de TORRES DE HANÓI é mover todos os discos da [Torre 1] para a [Torre 3], clicando nos botões embaixo de cada torre.\nVocê só pode mover um disco de cada vez e você NÃO PODE colocar um disco maior sobre um disco menor.\nBOA SORTE!!!');
+    }
+}
+</script>
+
+<body onload="carregaDocumento()">
+<!-- div com as torres principais -->
+<div id="torre1" style="top:50px; width:200px; height:200px; left:11px; position:absolute">
+<div id="torreVertical1" class="torreVertical" style="left:99px; top:10px; width:3px;height:170px"></div>
+<div id="torreHorizontal1" class="torreHorizontal" style="left:0px; top:180px; width:200px; height:2px"></div>
+<div class="nomeTorre">
+  <input type="button" value="TORRE 1" class="botao" onmouseover="this.className='botaoSobre'" 
+         onmouseout="this.className='botao'" id="botaoTorre1" onclick="analiseClick(this)" />
+</div>
+</div>
+
+<div id="torre2" style="top:50px; width:200px; height:200px; left:237px; position:absolute">
+<div id="torreVertical2" class="torreVertical" style="left:99px; top:10px; width:3px;height:170px"></div>
+<div id="torreHorizontal2" class="torreHorizontal" style="left:0px; top:180px; width:200px; height:2px;"></div>
+<div class="nomeTorre">
+<input type="button" value="TORRE 2" class="botao" onmouseover="this.className='botaoSobre'" 
+         onmouseout="this.className='botao'" id="botaoTorre2" onclick="analiseClick(this)" />
+</div>
+</div>
+
+<div id="torre3" style="top:50px; width:200px; height:200px; left:459px; position:absolute">
+<div id="torreVertical3" class="torreVertical" style="left:99px; top:10px; width:3px;height:170px"></div>
+<div id="torreHorizontal3" class="torreHorizontal" style="left:0px; top:180px; width:200px; height:2px;"></div>
+<div class="nomeTorre">
+<input type="button" value="TORRE 3" class="botao" onmouseover="this.className='botaoSobre'" 
+         onmouseout="this.className='botao'" id="botaoTorre3" onclick="analiseClick(this)" />
+</div>
+</div>
+
+<div id="disco1" class="disco" style="left:-250px;top:-250px;width:50px;height:19px;background-color:#FFCCCC;">
+</div>
+<div id="disco2" class="disco" style="left:-250px;top:-250px;width:70px;height:19px;background-color:#FF6600;">
+</div>
+<div id="disco3" class="disco" style="left:-250px;top:-250px;width:90px;height:19px;background-color:#00CC00;">
+</div>
+<div id="disco4" class="disco" style="left:-250px;top:-250px;width:120px;height:19px;background-color:#CC00CC;">
+</div>
+<div id="disco5" class="disco" style="left:-250px;top:-250px;width:150px;height:19px;background-color:#FFFF00;">
+</div>
+<div id="disco6" class="disco" style="left:-250px;top:-250px;width:180px;height:19px;background-color:#996633;">
+</div>
+<div id="disco7" class="disco" style="left:-250px;top:-250px;width:200px;height:19px;background-color:#CCCCFF;">
+</div>
+<div id="disco8" class="disco" style="left:-250px;top:-250px;width:220px;height:19px;background-color:#0000FF;">
+</div>
+
+<div id="controle" style="position:absolute; top:273px; width: 580px; left:35px; background-color:#FFFFFF">
+<table width="100%" border="0" cellpadding="0" cellspacing="0" bordercolor="#FFFFFF" style="border:1px solid #000000">
+<tr>
+<td width="269" style="height:25px; border-bottom:1px solid #000000; border-right:1px solid #000000; padding-left:3px"><strong>Quantidade de discos </strong></td>
+<td width="64" style="border-bottom:1px solid #000000; padding-left:3px; border-right:1px solid #000000"><select name="totalDiscos" id="totalDiscos">
+  <option value="7" selected="selected">3</option>
+  <option value="15">4</option>
+  <option value="31">5</option>
+  <option value="63">6</option>
+  <option value="127">7</option>
+  <option value="255">8</option>
+</select></td>
+<td width="123" style="border-bottom:1px solid #000000; padding-left:3px; border-right:1px solid #000000"><strong>Torre de Origem</strong></td>
+<td width="145" style="border-bottom:1px solid #000000; padding-left:3px; border-right:1px solid #000000">
+<div id="textoOrigem" align="center" style="color:#0000FF; font-weight:bold">
+-</div></td>
+</tr>
+<tr>
+<td style="height:25px; border-bottom:1px solid #000000; border-right:1px solid #000000; padding-left:3px">
+<strong>Quantidade mínima de movimentos</strong></td>
+<td style="border-bottom:1px solid #000000;padding-left:3px; border-right:1px solid #000000">
+<div id="quantidadeMinima" style="color:#0000FF; font-weight:bold" align="center">
+0</div></td>
+<td style="border-bottom:1px solid #000000;padding-left:3px; border-right:1px solid #000000"><strong>Torre de Destino </strong></td>
+<td style="border-bottom:1px solid #000000;padding-left:3px; border-right:1px solid #000000">
+<div id="textoDestino" align="center" style="color:#0000FF; font-weight:bold">
+-</div></td></tr>
+<tr>
+<td style="height:25px; border-bottom:1px solid #000000; border-right:1px solid #000000; padding-left:3px">
+<strong>Total de movimentos dados</strong></td>
+<td style="border-bottom:1px solid #000000;padding-left:3px; border-right:1px solid #000000">
+<div id="totalMovimentos" align="center" style="color:#0000FF; font-weight:bold">
+0</div></td>
+<td style="border-bottom:1px solid #000000;padding-left:3px; border-right:1px solid #000000"><strong>Tempo</strong></td>
+<td style="border-bottom:1px solid #000000;padding-left:3px; border-right:1px solid #000000">
+<div id="tempo" align="center" style="color:#0000FF; font-weight:bold">
+&nbsp;</div></td></tr>
+<tr>
+<td colspan="4" align="center" style="height:30px; border-bottom:1px solid #000000; border-right:1px solid #000000">
+<input name="botaoIniciar" type="button" class="botao" id="botaoIniciar" onClick="iniciar()" value="Iniciar" onmouseover="this.className='botaoSobre'" onmouseout="this.className='botao'"/>
+<input name="botaoDesfazer" type="button" disabled="disabled" class="botao" id="botaoDesfazer" onClick="desfazer()" value="Desfazer" onmouseover="this.className='botaoSobre'" onmouseout="this.className='botao'" />
+<input name="botaoInstrucoes" type="button" class="botao" id="botaoInstrucoes" value="Instru&ccedil;&otilde;es" onclick="instrucoes()" onmouseover="this.className='botaoSobre'" onmouseout="this.className='botao'"/></td>
+</tr>
+</table>
+</div>
+</body>
+</html>
