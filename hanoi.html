@@ -1,9 +1,6 @@
 <!--
-// $Id: hanoi.html,v 1.0 13/10/2006 Antonio Rodrigo S. Silva                 $
 //  ------------------------------------------------------------------------ //
-//                          TORRE DE HANÓI 1.0                               //
-//                 Copyright (c) 2006 HYPERMEDIA SISTEMAS                    //
-//                         hypermedia@gmail.com                              //
+//                          TORRE DE HANÃ“I 1.0                               //
 //  ------------------------------------------------------------------------ //
 //  This program is free software; you can redistribute it and/or modify     //
 //  it under the terms of the GNU General Public License as published by     //
@@ -29,7 +26,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>TORRE DE HAN&Oacute;I 1.0 - HYPERMEDIA SISTEMAS</title>
+<title>TORRE DE HAN&Oacute;I 1.0</title>
 <style>
 .torreVertical{
     position:absolute;
@@ -153,7 +150,7 @@ function iniciar(){
     var indice;
 	if (contaMovimentosDados >= 1 && fimJogo == false){
 	    paraTempo();
-	    if (confirm("Há um jogo em andamento. Deseja encerrá-lo?")){
+	    if (confirm("HÃ¡ um jogo em andamento. Deseja encerrÃ¡-lo?")){
 		    if (document.getElementById("botaoIniciar").value == "Iniciar"){
 	            document.getElementById("botaoIniciar").value = "Reiniciar";
 	        }
@@ -203,7 +200,7 @@ function analiseClick(obj){
 			}
 			else{
 			    paraTempo();
-			    alert('Não há discos a serem movidos na torre 1!');
+			    alert('NÃ£o hÃ¡ discos a serem movidos na torre 1!');
 				tempo();
 			}
 		}
@@ -216,7 +213,7 @@ function analiseClick(obj){
 			}
 			else{
 			    paraTempo();
-			    alert('Não há discos a serem movidos na torre 2!');
+			    alert('NÃ£o hÃ¡ discos a serem movidos na torre 2!');
 				tempo();
 			}
 		}
@@ -229,7 +226,7 @@ function analiseClick(obj){
 			}
 			else{
 			    paraTempo();
-			    alert('Não há discos a serem movidos na torre 3!');
+			    alert('NÃ£o hÃ¡ discos a serem movidos na torre 3!');
 				tempo();
 			}
 		}
@@ -257,7 +254,7 @@ function analiseClick(obj){
 		
 		if (torreInicial == torreDestino){
 		    paraTempo();
-		    alert("A torre de destino não pode ser igual à torre de origem!")
+		    alert("A torre de destino nÃ£o pode ser igual Ã  torre de origem!")
 			tempo();
 			limpaTextos();
 			torreInicial = "";
@@ -346,7 +343,7 @@ function moverDisco(){
 			}
 			else{
 			    paraTempo();
-			    alert('Jogada inválida!\nUm disco maior não pode ficar em cima do disco menor!');
+			    alert('Jogada invÃ¡lida!\nUm disco maior nÃ£o pode ficar em cima do disco menor!');
 				tempo();
 				habilitarBotoes();
 				limpaTextos();
@@ -396,7 +393,7 @@ function moverDisco(){
 			}
 			else{
 			    paraTempo();
-			    alert('Jogada inválida!\nUm disco maior não pode ficar em cima do disco menor!');
+			    alert('Jogada invÃ¡lida!\nUm disco maior nÃ£o pode ficar em cima do disco menor!');
 				tempo();
 				habilitarBotoes();
 				limpaTextos();
@@ -452,7 +449,7 @@ function moverDisco(){
 			}
 			else{
 			    paraTempo();
-			    alert('Jogada inválida!\nUm disco maior não pode ficar em cima do disco menor!');
+			    alert('Jogada invÃ¡lida!\nUm disco maior nÃ£o pode ficar em cima do disco menor!');
 				tempo();
 				habilitarBotoes();
 				limpaTextos();
@@ -502,7 +499,7 @@ function moverDisco(){
 			}
 			else{
 			    paraTempo();
-			    alert('Jogada inválida!\nUm disco maior não pode ficar em cima do disco menor!');
+			    alert('Jogada invÃ¡lida!\nUm disco maior nÃ£o pode ficar em cima do disco menor!');
 				tempo();
 				habilitarBotoes();
 				limpaTextos();
@@ -558,7 +555,7 @@ function moverDisco(){
 			}
 			else{
 			    paraTempo();
-			    alert('Jogada inválida!\nUm disco maior não pode ficar em cima do disco menor!');
+			    alert('Jogada invÃ¡lida!\nUm disco maior nÃ£o pode ficar em cima do disco menor!');
 				tempo();
 				habilitarBotoes();
 				limpaTextos();
@@ -608,7 +605,7 @@ function moverDisco(){
 			}
 			else{
 			    paraTempo();
-			    alert('Jogada inválida!\nUm disco maior não pode ficar em cima do disco menor!');
+			    alert('Jogada invÃ¡lida!\nUm disco maior nÃ£o pode ficar em cima do disco menor!');
 				tempo();
 				habilitarBotoes();
 				limpaTextos();
@@ -696,10 +693,10 @@ function verificarFim(){
                     fimJogo = true;
 			desabilitarBotoes();
 	        if (contaMovimentosDados == parseInt(document.getElementById("totalDiscos").options[indice].value)){
-			    alert("PARABÉNS!!! Você completou a torre com a mínima quantidade de jogadas!");
+			    alert("PARABÃ‰NS!!! VocÃª completou a torre com a mÃ­nima quantidade de jogadas!");
 			}
 			else{
-			    alert("MUITO BEM!!! Você completou a torre, mas você pode melhorar, pois você se movimentou mais do que o mínimo permitido!");
+			    alert("MUITO BEM!!! VocÃª completou a torre, mas vocÃª pode melhorar, pois vocÃª se movimentou mais do que o mÃ­nimo permitido!");
 			}
 			document.getElementById("botaoInstrucoes").disabled = false;
 	    }
@@ -756,11 +753,11 @@ function limpaTempo(){
 function instrucoes(){
     if ((segundos !=0) || (minutos !=0) || (horas !=0)){
         paraTempo();
-        alert('O objetivo de TORRES DE HANÓI é mover todos os discos da [Torre 1] para a [Torre 3], clicando nos botões embaixo de cada torre.\nVocê só pode mover um disco de cada vez e você NÃO PODE colocar um disco maior sobre um disco menor.\nBOA SORTE!!!');
+        alert('O objetivo de TORRES DE HANÃ“I Ã© mover todos os discos da [Torre 1] para a [Torre 3], clicando nos botÃµes embaixo de cada torre.\nVocÃª sÃ³ pode mover um disco de cada vez e vocÃª NÃƒO PODE colocar um disco maior sobre um disco menor.\nBOA SORTE!!!');
         tempo();
     }
     else{
-        alert('O objetivo de TORRES DE HANÓI é mover todos os discos da [Torre 1] para a [Torre 3], clicando nos botões embaixo de cada torre.\nVocê só pode mover um disco de cada vez e você NÃO PODE colocar um disco maior sobre um disco menor.\nBOA SORTE!!!');
+        alert('O objetivo de TORRES DE HANÃ“I Ã© mover todos os discos da [Torre 1] para a [Torre 3], clicando nos botÃµes embaixo de cada torre.\nVocÃª sÃ³ pode mover um disco de cada vez e vocÃª NÃƒO PODE colocar um disco maior sobre um disco menor.\nBOA SORTE!!!');
     }
 }
 </script>
@@ -830,7 +827,7 @@ function instrucoes(){
 </tr>
 <tr>
 <td style="height:25px; border-bottom:1px solid #000000; border-right:1px solid #000000; padding-left:3px">
-<strong>Quantidade mínima de movimentos</strong></td>
+<strong>Quantidade mÃ­nima de movimentos</strong></td>
 <td style="border-bottom:1px solid #000000;padding-left:3px; border-right:1px solid #000000">
 <div id="quantidadeMinima" style="color:#0000FF; font-weight:bold" align="center">
 0</div></td>
